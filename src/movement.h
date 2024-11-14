@@ -15,5 +15,6 @@ void reverse(int distance);
 void turnRight(int angle);
 void turnLeft(int angle);
 void reset(int left, int right);
+void circle();
 
 #endif

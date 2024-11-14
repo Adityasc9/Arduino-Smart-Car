@@ -31,7 +31,7 @@ void turnRight(int angle) {
   analogWrite(right, 255);
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
-  float turnTime = 1900 * (float)angle / 180;
+  float turnTime = 960 * (float)angle / 180;
   delay(turnTime);
   reset(left, right);
 }
@@ -43,7 +43,7 @@ void turnLeft(int angle) {
   analogWrite(left, 255);
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
-  float turnTime = 2000 * (float)angle / 180;
+  float turnTime = 960 * (float)angle / 180;
   delay(turnTime);
   reset(left, right);
 }
@@ -51,4 +51,15 @@ void turnLeft(int angle) {
 void reset(int left, int right) {
   analogWrite(left, 0);
   analogWrite(right, 0);
+  delay(300);
+}
+
+void circle(){
+  digitalWrite(rf, HIGH);
+  digitalWrite(rb, LOW);
+  digitalWrite(lf, HIGH);
+  digitalWrite(lb, LOW);
+  analogWrite(right, 255);
+  analogWrite(left, 128);
+  delay(3000);
 }
