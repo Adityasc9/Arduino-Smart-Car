@@ -20,7 +20,7 @@ void reverse(int distance) {
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
   
-  delay(150 * distance);
+  delay(200 * distance);
   reset(left, right);
 }
 

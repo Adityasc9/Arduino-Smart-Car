@@ -19,8 +19,32 @@ void setup() {
 }
 
 void loop() {
-  for(int i; i < 10; i++){ // star pattern twice
-    forward(10);
-    turnRight(144);
-  }
+  delay(2000);
+  turnRight(90);
+  turnLeft(90);
+  delay(2000);
+  turnLeft(180);
+  turnRight(180);
+    //front and back
+  // delay(5000);
+  // forward(10);
+  // reverse(10);
+  // delay(5000);
+
+  // // square
+  // forward(10);
+  // turnRight(90);
+  // forward(10);
+  // turnRight(90);
+  // forward(10);
+  // turnRight(90);
+  // forward(10);
+
+  // delay(5000);
+
+  // //star
+  // for(int i; i < 5; i++){ // star pattern twice
+  //   forward(10);
+  //   turnRight(144);
+  // }
 }
