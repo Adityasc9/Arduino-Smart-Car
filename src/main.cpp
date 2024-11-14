@@ -9,14 +9,7 @@ int rf = 13;
 int rb = 12;
 
 void setup() {
-  pinMode(left, OUTPUT);
-  pinMode(lf, OUTPUT);
-  pinMode(lb, OUTPUT);
-  pinMode(right, OUTPUT);
-  pinMode(rf, OUTPUT);
-  pinMode(rb, OUTPUT);
   
-
 }
 
 void loop() {
