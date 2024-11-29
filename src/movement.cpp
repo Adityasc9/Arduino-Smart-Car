@@ -1,65 +1,79 @@
 #include "movement.h"
 
-void forward(int distance) {
-  analogWrite(left, 255);
+// int left = 5;
+// int lf = 6;
+// int lb = 7;
+// int right = 11;
+// int rf = 13;
+// int rb = 12;
+
+void reset() {
+  analogWrite(left, 0);
+  analogWrite(right, 0);
+}
+
+void forward(int distance, int speed) {
+  speed = constrain(speed, 0, 255);
+  analogWrite(left, speed);
   digitalWrite(lf, HIGH);
   digitalWrite(lb, LOW);
-  analogWrite(right, 255);
+  analogWrite(right, speed);
   digitalWrite(rf, HIGH);
   digitalWrite(rb, LOW);
   
-  delay(200 * distance);
-  reset(left, right);
+  delay((unsigned long)(distance * 200 * (255.0 / speed)));
+  reset();
 }
 
-void reverse(int distance) {
-  analogWrite(left, 255);
+void reverse(int distance, int speed) {
+  speed = constrain(speed, 0, 255);
+  analogWrite(left, speed);
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
-  analogWrite(right, 255);
+  analogWrite(right, speed);
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
   
-  delay(200 * distance);
-  reset(left, right);
+  delay((unsigned long)(distance * 200 * (255.0 / speed)));
+  reset();
 }
 
 void turnRight(int angle) {
+  angle = constrain(angle, 0, 360);
   analogWrite(left, 255);
   digitalWrite(lf, HIGH);
   digitalWrite(lb, LOW);
   analogWrite(right, 255);
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
-  float turnTime = 960 * (float)angle / 180;
-  delay(turnTime);
-  reset(left, right);
+
+  delay((unsigned long)(angle * 800 / 180));
+  reset();
 }
 
 void turnLeft(int angle) {
+  angle = constrain(angle, 0, 360);
   analogWrite(right, 255);
   digitalWrite(rf, HIGH);
   digitalWrite(rb, LOW);
   analogWrite(left, 255);
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
-  float turnTime = 960 * (float)angle / 180;
-  delay(turnTime);
-  reset(left, right);
+
+  delay((unsigned long)(angle * 800 / 180));
+  reset();
 }
 
-void reset(int left, int right) {
-  analogWrite(left, 0);
-  analogWrite(right, 0);
-  delay(300);
-}
-
-void circle(){
+void circle(int innerSpeed, int outerSpeed, int duration) {
+  innerSpeed = constrain(innerSpeed, 0, 255);
+  outerSpeed = constrain(outerSpeed, 0, 255);
   digitalWrite(rf, HIGH);
   digitalWrite(rb, LOW);
   digitalWrite(lf, HIGH);
   digitalWrite(lb, LOW);
-  analogWrite(right, 255);
-  analogWrite(left, 128);
-  delay(3000);
+  analogWrite(right, outerSpeed);
+  analogWrite(left, innerSpeed);
+
+  delay(duration);
+  reset();
 }

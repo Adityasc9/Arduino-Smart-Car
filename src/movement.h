@@ -10,11 +10,11 @@ extern int right;
 extern int rf;
 extern int rb;
 
-void forward(int distance);
-void reverse(int distance);
+void forward(int distance, int speed);
+void reverse(int distance, int speed);
 void turnRight(int angle);
 void turnLeft(int angle);
-void reset(int left, int right);
-void circle();
+void reset();
+void circle(int innerSpeed, int outerSpeed, int duration);
 
 #endif
