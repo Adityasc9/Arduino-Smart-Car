@@ -5,12 +5,12 @@ void reset() {
   analogWrite(right, 0);
 }
 
-void forward(int distance, int speed) {
-  speed = constrain(speed, 0, 255);
-  analogWrite(left, 255);
+void forward(int speed) {
+  
+  analogWrite(left, speed);
   digitalWrite(lf, HIGH);
   digitalWrite(lb, LOW);
-  analogWrite(right, 255);
+  analogWrite(right, speed);
   digitalWrite(rf, HIGH);
   digitalWrite(rb, LOW);
   
@@ -18,12 +18,12 @@ void forward(int distance, int speed) {
   // reset();
 }
 
-void reverse(int distance, int speed) {
-  speed = constrain(speed, 0, 255);
-  analogWrite(left, 255);
+void reverse(int speed) {
+  
+  analogWrite(left, speed);
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
-  analogWrite(right, 255);
+  analogWrite(right, speed);
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
   
@@ -31,12 +31,12 @@ void reverse(int distance, int speed) {
   // reset();
 }
 
-void turnRight(int angle) {
-  angle = constrain(angle, 0, 360);
-  analogWrite(left, 255);
+void turnLeft(int speed) {
+
+  analogWrite(left, speed);
   digitalWrite(lf, HIGH);
   digitalWrite(lb, LOW);
-  analogWrite(right, 255);
+  analogWrite(right, speed);
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
 
@@ -44,12 +44,11 @@ void turnRight(int angle) {
   // reset();
 }
 
-void turnLeft(int angle) {
-  angle = constrain(angle, 0, 360);
-  analogWrite(right, 255);
+void turnRight(int speed) {
+  analogWrite(right, speed);
   digitalWrite(rf, HIGH);
   digitalWrite(rb, LOW);
-  analogWrite(left, 255);
+  analogWrite(left, speed);
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
 

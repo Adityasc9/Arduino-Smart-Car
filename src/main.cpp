@@ -6,7 +6,7 @@
 int left = 5;
 int lf = 6;
 int lb = 7;
-int right = 11;
+int right = 10;
 int rf = 13;
 int rb = 12;
 int stby = 8;
@@ -21,6 +21,10 @@ int IR = 2;
 #define IR_RIGHT 0xF20DFF00
 #define IR_REPEAT 0x0 // Your repeat signal
 #define IR_RESET 0xE619FF00
+#define IR_SPEED_UP 0xF609FF00
+#define IR_SPEED_DOWN 0xF807FF00
+
+
 void handleIRCode(uint32_t code);
 
 // Timeout for detecting IR release
@@ -46,39 +50,89 @@ void setup() {
 }
 
 void loop() {
-    if (IrReceiver.decode()) { // Check if an IR signal is received
-        uint32_t receivedCode = IrReceiver.decodedIRData.decodedRawData; // Store the received code
-        if(receivedCode != 0x0){
+        if (IrReceiver.decode()) {
+        uint32_t receivedCode = IrReceiver.decodedIRData.decodedRawData;
+
+        if (receivedCode == IR_RESET) {
+            reset();
+            Serial.println("Reset");
+            IrReceiver.resume();
+            return;
+        }
+
+        if (receivedCode != IR_REPEAT) {
             handleIRCode(receivedCode);
         }
-        if(receivedCode == IR_RESET){
-            reset();
-            Serial.println("reset"); 
-            
-        }
+
         Serial.print("Raw Data: ");
-        Serial.println(receivedCode, HEX); // Print received raw data
+        Serial.println(receivedCode, HEX);
+
         IrReceiver.resume();
     }
-    
-    
 }
 
-// Function to handle IR codes and control movement
+int currentSpeed = 160; // Default speed
+uint32_t last_code = 0;
 void handleIRCode(uint32_t code) {
-    if (code == IR_UP) {
-        Serial.println("Moving Forward");
-        forward(1, 150); // Move forward at 150 speed
-    } else if (code == IR_LEFT) {
-        Serial.println("Turning Left");
-        turnLeft(90); // Turn left at 90 degrees
-    } else if (code == IR_DOWN) {
-        Serial.println("Moving Backward");
-        reverse(1, 150); // Move backward at 150 speed
-    } else if (code == IR_RIGHT) {
-        Serial.println("Turning Right");
-        turnRight(90); // Turn right at 90 degrees
-    } else {
-        Serial.println("Unknown Command");
+    if (code == IR_SPEED_UP) {
+        currentSpeed += 15; // Increase speed
+        currentSpeed = constrain(currentSpeed, 60, 255);
+        switch(last_code){
+            case IR_UP:
+                forward(currentSpeed);
+                break;
+            case IR_DOWN:
+                reverse(currentSpeed);
+                break; 
+            case IR_LEFT:
+                turnLeft(currentSpeed);
+                break;
+            case IR_RIGHT:
+                turnRight(currentSpeed);
+                break;
+        }
+        return;
+    } else if (code == IR_SPEED_DOWN) {
+        currentSpeed -= 15; // Decrease speed
+        currentSpeed = constrain(currentSpeed, 60, 255);
+        switch(last_code){
+            case IR_UP:
+                forward(currentSpeed);
+                break;
+            case IR_DOWN:
+                reverse(currentSpeed);
+                break;
+            case IR_LEFT:
+                turnLeft(currentSpeed);
+                break;
+            case IR_RIGHT:
+                turnRight(currentSpeed);
+                break;
+        }
+        return;
+    } 
+
+    // Constrain speed to limits
+    
+    Serial.println(currentSpeed);
+
+    switch(code){
+        case IR_UP:
+            Serial.println("Moving Forward");
+            forward(currentSpeed);
+            break;
+        case(IR_LEFT):
+            Serial.println("Turning Left");
+            turnLeft(currentSpeed);
+            break;
+        case(IR_DOWN):
+            Serial.println("Moving Backward");
+            reverse(currentSpeed);
+            break;
+        case(IR_RIGHT):
+            Serial.println("Turning Right");
+            turnRight(currentSpeed);
+            break;
     }
+    last_code = code;
 }
