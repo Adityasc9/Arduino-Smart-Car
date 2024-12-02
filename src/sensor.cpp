@@ -1,29 +1,13 @@
-#define trigPin 13
-#define soundPin 12
+#include <Arduino.h>
+#include "sensor.h"
 
-void setup() {
-    Serial.begin(9600);
-    pinMode(trigPin, OUTPUT);
-    pinMode(soundPin, INPUT);
-}
-
-void loop() {
-    long duration, distance;
-
-    digitalWrite(trigPin, LOW);
+float measureBackDistance() {
+    digitalWrite(Trig_back, LOW);
     delayMicroseconds(2);
-    digitalWrite(trigPin, HIGH);
+    digitalWrite(Trig_back, HIGH);
     delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
+    digitalWrite(Trig_back, LOW);
 
-    duration = pulseIn(soundPin, HIGH);
-    distance = (duration / 2) / 29.1;
-
-    if (distance <= 250) {
-        tone(9, 400, 100);
-    } else {
-        noTone(9);
-    }
-
-    delay(50);
+    float duration = pulseIn(Echo_back, HIGH);
+    return (duration * 0.0343) / 2;
 }
