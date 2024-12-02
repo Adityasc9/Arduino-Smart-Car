@@ -1,12 +1,5 @@
 #include "movement.h"
 
-// int left = 5;
-// int lf = 6;
-// int lb = 7;
-// int right = 11;
-// int rf = 13;
-// int rb = 12;
-
 void reset() {
   analogWrite(left, 0);
   analogWrite(right, 0);
@@ -14,28 +7,28 @@ void reset() {
 
 void forward(int distance, int speed) {
   speed = constrain(speed, 0, 255);
-  analogWrite(left, speed);
+  analogWrite(left, 255);
   digitalWrite(lf, HIGH);
   digitalWrite(lb, LOW);
-  analogWrite(right, speed);
+  analogWrite(right, 255);
   digitalWrite(rf, HIGH);
   digitalWrite(rb, LOW);
   
-  delay((unsigned long)(distance * 200 * (255.0 / speed)));
-  reset();
+  // delay((unsigned long)(distance * 200 * (255.0 / speed)));
+  // reset();
 }
 
 void reverse(int distance, int speed) {
   speed = constrain(speed, 0, 255);
-  analogWrite(left, speed);
+  analogWrite(left, 255);
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
-  analogWrite(right, speed);
+  analogWrite(right, 255);
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
   
-  delay((unsigned long)(distance * 200 * (255.0 / speed)));
-  reset();
+  // delay((unsigned long)(distance * 200 * (255.0 / speed)));
+  // reset();
 }
 
 void turnRight(int angle) {
@@ -47,8 +40,8 @@ void turnRight(int angle) {
   digitalWrite(rf, LOW);
   digitalWrite(rb, HIGH);
 
-  delay((unsigned long)(angle * 800 / 180));
-  reset();
+  // delay((unsigned long)(angle * 800 / 180));
+  // reset();
 }
 
 void turnLeft(int angle) {
@@ -60,8 +53,8 @@ void turnLeft(int angle) {
   digitalWrite(lf, LOW);
   digitalWrite(lb, HIGH);
 
-  delay((unsigned long)(angle * 800 / 180));
-  reset();
+  // delay((unsigned long)(angle * 800 / 180));
+  // reset();
 }
 
 void circle(int innerSpeed, int outerSpeed, int duration) {
