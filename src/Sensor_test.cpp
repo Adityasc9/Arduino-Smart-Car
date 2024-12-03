@@ -10,6 +10,6 @@ void setup() {
 
 void loop() {
     float distance = measureBackDistance();
-    Serial.print("Measured Distance: ",distance);
+    Serial.println("Measured Distance: ",distance);
     delay(1000);
 }
