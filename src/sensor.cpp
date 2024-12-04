@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "sensor.h"
 
-float measureBackDistance() {
+float measureBackDistance() { // measure distance from behind the car
     digitalWrite(Trig_back, LOW);
     delayMicroseconds(2);
     digitalWrite(Trig_back, HIGH);
@@ -12,7 +12,7 @@ float measureBackDistance() {
     return (duration * 0.0343) / 2;
 }
 
-float measureFrontDistance() {
+float measureFrontDistance() { // measure distance from in front of the car
     digitalWrite(Trig_front, LOW);
     delayMicroseconds(2);
     digitalWrite(Trig_front, HIGH);

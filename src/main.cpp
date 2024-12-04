@@ -17,39 +17,35 @@ int Trig_front = 9;
 int Echo_front = 11;
 int IR = 2;
 
-// Define IR codes
+// Define IR hex codes to car functionality
 #define IR_UP 0xEA15FF00
 #define IR_LEFT 0xE916FF00
 #define IR_DOWN 0xE718FF00
 #define IR_RIGHT 0xF20DFF00
-#define IR_REPEAT 0x0 // Your repeat signal
+#define IR_REPEAT 0x0 // when holding down a button, 0x0 is constantly printed
 #define IR_RESET 0xE619FF00
 #define IR_SPEED_UP 0xF609FF00
 #define IR_SPEED_DOWN 0xF807FF00
 
 
-void handleIRCode(uint32_t code);
-
-// Timeout for detecting IR release
-unsigned long lastSignalTime = 0; // Timestamp of the last IR signal
-const unsigned long signalTimeout = 100; // Timeout in milliseconds
-
+void handleIRCode(uint32_t code); 
 
 
 uint32_t lastCode = 0; // Store the last received IR code
 
-enum MovementState { NONE, FORWARD, BACKWARD, LEFT, RIGHT };
+enum MovementState { NONE, FORWARD, BACKWARD, LEFT, RIGHT }; // to keep track of current state of car
 MovementState currentMovement = NONE; // Initialize as no movement
 
 void setup() {
-    Serial.begin(9600); // Establish serial communication
+    Serial.begin(9600); // serial baud rate
     IrReceiver.begin(IR, DISABLE_LED_FEEDBACK); // Start the receiver
 
-    // Configure motor control pins
+    // Configure ultrasonic pins
     pinMode(Trig_back, OUTPUT);
     pinMode(Echo_back,INPUT);
     pinMode(Trig_front, OUTPUT);
     pinMode(Echo_front,INPUT);
+    // Configure motor control pins
     pinMode(left, OUTPUT);
     pinMode(lf, OUTPUT);
     pinMode(lb, OUTPUT);
@@ -57,32 +53,31 @@ void setup() {
     pinMode(rf, OUTPUT);
     pinMode(rb, OUTPUT);
     pinMode(stby, OUTPUT);
-    digitalWrite(stby, HIGH); // Enable the motor driver
-    delay(1000); // Short startup delay
+    digitalWrite(stby, HIGH); // turn on the motor driver
 }
-bool block_back = false;
+bool block_back = false; // blocking movement if close to collision
 bool block_front = false;
 
-unsigned long lastDistanceMeasurement = 0; // Track last measurement time
-const unsigned long measurementInterval = 500; // 1 second interval
+unsigned long lastDistanceMeasurement = 0; // Track last distance measurement time
+const unsigned long measurementInterval = 250; // do it every 500ms
 
 
 void loop() {
+    
     unsigned long currentMillis = millis(); // Get the current time
-    if (currentMillis - lastDistanceMeasurement >= measurementInterval) {
+    if (currentMillis - lastDistanceMeasurement >= measurementInterval) { 
         lastDistanceMeasurement = currentMillis; // Update last measurement time
-        float back_distance = measureBackDistance(); // Measure distance from the sensor
-        float front_distance = measureFrontDistance();  // measure distance from the front sensor
-        Serial.println("checking distance");
+        float back_distance = measureBackDistance(); // Measure distance front
+        float front_distance = measureFrontDistance();  // measure distance back
+        
         // Obstacle detection logic
         if (back_distance < 25 && currentMovement == BACKWARD) {
             reset();
             currentMovement = NONE;
             Serial.println("Obstacle detected! Stopping...");
             Serial.println(back_distance);
-            delay(500); // Wait to prevent rapid stopping and starting
             block_back = true;
-        } else {
+        }  else if (back_distance >= 25){
             block_back = false; // Clear the flag if no obstacle is detected
         }
 
@@ -91,66 +86,63 @@ void loop() {
             currentMovement = NONE;
             Serial.println("Obstacle detected! Stopping...");
             Serial.println(front_distance);
-            delay(500); // Wait to prevent rapid stopping and starting
             block_front = true;
-        } else {
+        }  else if (front_distance >= 25){
             block_front = false; // Clear the flag if no obstacle is detected
         }
+
     }
 
     
     
-    if (IrReceiver.decode()) {
-        uint32_t receivedCode = IrReceiver.decodedIRData.decodedRawData;
+    if (IrReceiver.decode()) { // 
+        uint32_t receivedCode = IrReceiver.decodedIRData.decodedRawData; // current hex code
 
-        if (receivedCode == IR_RESET) {
+        if (receivedCode == IR_RESET) { // reset the car
             reset();
             currentMovement = NONE;
-            Serial.println("Reset");
             IrReceiver.resume();
             return;
         }
 
-        if (receivedCode != IR_REPEAT) {
-            handleIRCode(receivedCode);
+        if (receivedCode != IR_REPEAT) { // only if not a repeat then execute new code
+            handleIRCode(receivedCode); // handles all IR codes
         }
 
-        Serial.print("Raw Data: ");
         Serial.println(receivedCode, HEX);
 
-        IrReceiver.resume();
+        IrReceiver.resume(); // wait for next signal
     }
     
 }
 
-int currentSpeed = 160; // Default speed
+int currentSpeed = 160; // Starting speed
 uint32_t last_code = 0;
 void handleIRCode(uint32_t code) {
 
     
     if (code == IR_SPEED_UP) {
-        currentSpeed += 15; // Increase speed
-        currentSpeed = constrain(currentSpeed, 60, 255);
+        currentSpeed = constrain(currentSpeed + 25, 75, 255);
     } else if (code == IR_SPEED_DOWN) {
-        currentSpeed -= 15; // Decrease speed
-        currentSpeed = constrain(currentSpeed, 60, 255);
-        
+        currentSpeed = constrain(currentSpeed - 25, 75, 255);
     } 
 
-    if (code == IR_SPEED_DOWN || code == IR_SPEED_UP){
+    if (code == IR_SPEED_DOWN || code == IR_SPEED_UP){ // after changing speed, the car should continue doing previous movemen
         switch(last_code){
             case IR_UP:
-                if (!block_front) { // Allow reverse only if back is not blocked
+                if (block_front == false) { // Allow reverse only if back is not blocked
                     forward(currentSpeed);
                     currentMovement = FORWARD;
+                    Serial.print("block:");
                 } else {
                     Serial.println("Cannot go forward! Path is blocked.");
                 }
                 break;
             case IR_DOWN:
-                if (!block_back) { // Allow reverse only if back is not blocked
+                if (block_back == false) { // Allow reverse only if back is not blocked
                     reverse(currentSpeed);
                     currentMovement = BACKWARD;
+                    Serial.print("block:");
                 } else {
                     Serial.println("Cannot reverse! Backward path is blocked.");
                 }
@@ -164,18 +156,20 @@ void handleIRCode(uint32_t code) {
                 currentMovement = RIGHT;
                 break;
         }
+        //last_code = code;
         return;
-
     }
     
     switch(code){
         case IR_UP:
-            if (!block_front) { // Allow reverse only if back is not blocked
+            if (block_front == false) { // Allow reverse only if back is not blocked
                     forward(currentSpeed);
                     currentMovement = FORWARD;
-                } else {
-                    Serial.println("Cannot go forward! Path is blocked.");
-                }
+                    Serial.print("block:");
+                    Serial.println(block_front);
+            } else {
+                Serial.println("Cannot go forward! Path is blocked.");
+            }
             break;
         case(IR_LEFT):
             Serial.println("Turning Left");
@@ -183,9 +177,11 @@ void handleIRCode(uint32_t code) {
             currentMovement = LEFT;
             break;
         case(IR_DOWN):
-            if (!block_back) { // Allow reverse only if back is not blocked
+            if (block_back == false) { // Allow reverse only if back is not blocked
                 reverse(currentSpeed);
                 currentMovement = BACKWARD;
+                Serial.print("block:");
+                Serial.println(block_back);
             } else {
                 Serial.println("Cannot reverse! Backward path is blocked.");
             }
