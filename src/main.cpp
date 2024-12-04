@@ -59,7 +59,7 @@ bool block_back = false; // blocking movement if close to collision
 bool block_front = false;
 
 unsigned long lastDistanceMeasurement = 0; // Track last distance measurement time
-const unsigned long measurementInterval = 250; // do it every 500ms
+const unsigned long measurementInterval = 250; // do it every 250ms
 
 
 void loop() {
