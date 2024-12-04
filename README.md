@@ -52,9 +52,10 @@ This project showcases a remote-controlled robotic car powered by an Arduino Uno
 ---
 
 ## Usage
+(COMMENT OUT Sensor_test.cpp as these are only tests and project wont compile if tests are not commented)
 1. Turn on the car and ensure the motors are enabled.
 2. Find a suitable IR remote such as a TV remote or LED light remote
-4. Use the IR remote and find buttons and their hex values to input into the hex values into the definiations at the start of the code:
+3. Use the IR remote and find buttons and their hex values to input into the hex values into the definiations at the start of the code:
    - **Forward**: IR_UP button
    - **Backward**: IR_DOWN button
    - **Turn Left**: IR_LEFT button
@@ -62,7 +63,7 @@ This project showcases a remote-controlled robotic car powered by an Arduino Uno
    - **Increase Speed**: IR_SPEED_UP button
    - **Decrease Speed**: IR_SPEED_DOWN button
    - **Reset/Stop**: IR_RESET button
-5. Use buttons to control car
+4. Use buttons to control car
 5. Obstacle detection is automatic and prevents backward and forward movement when obstacles are within 25 cm.
 
 ---
