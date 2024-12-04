@@ -32,14 +32,13 @@ void handleIRCode(uint32_t code);
 
 
 uint32_t lastCode = 0; // Store the last received IR code
-
 enum MovementState { NONE, FORWARD, BACKWARD, LEFT, RIGHT }; // to keep track of current state of car
+
 MovementState currentMovement = NONE; // Initialize as no movement
 
 void setup() {
     Serial.begin(9600); // serial baud rate
     IrReceiver.begin(IR, DISABLE_LED_FEEDBACK); // Start the receiver
-
     // Configure ultrasonic pins
     pinMode(Trig_back, OUTPUT);
     pinMode(Echo_back,INPUT);
@@ -118,9 +117,8 @@ void loop() {
 
 int currentSpeed = 160; // Starting speed
 uint32_t last_code = 0;
-void handleIRCode(uint32_t code) {
 
-    
+void handleIRCode(uint32_t code) {
     if (code == IR_SPEED_UP) {
         currentSpeed = constrain(currentSpeed + 25, 75, 255);
     } else if (code == IR_SPEED_DOWN) {
